@@ -1,8 +1,8 @@
 #define BLYNK_PRINT Serial
 
-#define BLYNK_TEMPLATE_ID "TMPL6U9YIshdq"
-#define BLYNK_TEMPLATE_NAME "Smart Home"
-#define BLYNK_AUTH_TOKEN "3-xm9svAuNxNz3NuwPI3wWJAdZPeABAZ"
+#define BLYNK_TEMPLATE_ID " saya"
+#define BLYNK_TEMPLATE_NAME "aja aja ada"
+#define BLYNK_AUTH_TOKEN "templet"
 
 #include <WiFi.h>
 #include <WiFiClient.h>
@@ -16,15 +16,16 @@
 #define RELAY_3 25
 #define RELAY_4 26
 
-#define SW_1 2
-#define SW_2 12
-#define SW_3 14
+#define sakalr1 2
+#define sakalr2 12
+#define sakalr3 14
 
-#define VPIN_SW1 V0
-#define VPIN_SW2 V1
-#define VPIN_SW3 V2
-#define VPIN_SW4 V3
-#define VPIN_SUHU V4
+#define Saklar1V V0
+#define Saklar2V V1
+#define Saklar3V V2
+#define Saklar4V V3
+#define suhuv V4
+
 
 bool relay1_state = LOW;
 bool relay2_state = LOW;
@@ -38,20 +39,20 @@ DHTesp dhtSensor;
 LiquidCrystal_I2C lcd(0x3F, 16, 2);  
 
 char auth[] = BLYNK_AUTH_TOKEN;
-char ssid[] = "Andro"; //ganti sesuai hotspot/wifi yang tersedia
-char pass[] = "mau";
+char ssid[] = "aspalpanas"; 
+char pass[] = "tulangpaus";
 
 BlynkTimer timer;
 
 BLYNK_CONNECTED() {
   // Request the latest state from the server
-  Blynk.syncVirtual(VPIN_SW1);
-  Blynk.syncVirtual(VPIN_SW2);
-  Blynk.syncVirtual(VPIN_SW3);
-  Blynk.syncVirtual(VPIN_SW4);
+  Blynk.syncVirtual(Saklar1V);
+  Blynk.syncVirtual(Saklar2V);
+  Blynk.syncVirtual(Saklar3V);
+  Blynk.syncVirtual(Saklar4V);
 }
 //BLYNK V0
-BLYNK_WRITE(VPIN_SW1)
+BLYNK_WRITE(Saklar1V)
 {
  relay1_state = param.asInt();
  if(relay1_state == 1) {
@@ -62,7 +63,7 @@ BLYNK_WRITE(VPIN_SW1)
  }
 }
 //BLYNK V1
-BLYNK_WRITE(VPIN_SW2)
+BLYNK_WRITE(Saklar2V)
 {
  relay2_state = param.asInt();
  if(relay2_state == 1) {
@@ -73,7 +74,7 @@ BLYNK_WRITE(VPIN_SW2)
  }
 }
 //BLYNK V2
-BLYNK_WRITE(VPIN_SW3)
+BLYNK_WRITE(Saklar3V)
 {
  relay3_state = param.asInt();
  if(relay3_state == 1) {
@@ -84,7 +85,7 @@ BLYNK_WRITE(VPIN_SW3)
  }
 }
 //BLYNK V3
-BLYNK_WRITE(VPIN_SW4)
+BLYNK_WRITE(Saklar4V)
 {
  int relay4_state = param.asInt();
  digitalWrite(RELAY_4, !relay4_state);
@@ -100,48 +101,48 @@ void sendSensor()
  lcd.print("Temp: "+String(temperature));
  lcd.setCursor(0,1);
  lcd.print("Hum: "+String(humidity));
- Blynk.virtualWrite(VPIN_SUHU, temperature); 
+ Blynk.virtualWrite(suhuv, temperature); 
 }
 
 //fungsi untuk kontrol manual tanpa Blynk
 void manual_control()
 {
   //switch1
-  if (digitalRead(SW_1) == LOW && sw1_state == LOW) {
+  if (digitalRead(sakalr1) == LOW && sw1_state == LOW) {
     digitalWrite(RELAY_1, LOW);
-    Blynk.virtualWrite(VPIN_SW1, HIGH);
+    Blynk.virtualWrite(Saklar1V, HIGH);
     relay1_state = HIGH;
     sw1_state = HIGH;
   }
-  if (digitalRead(SW_1) == HIGH && sw1_state == HIGH) {
+  if (digitalRead(sakalr1) == HIGH && sw1_state == HIGH) {
     digitalWrite(RELAY_1, HIGH);
-    Blynk.virtualWrite(VPIN_SW1, LOW);
+    Blynk.virtualWrite(Saklar1V, LOW);
     relay1_state = LOW;
     sw1_state = 0;
   }
   //switch2
-  if (digitalRead(SW_2) == LOW && sw2_state == LOW) {
+  if (digitalRead(sakalr2) == LOW && sw2_state == LOW) {
     digitalWrite(RELAY_2, LOW);
-    Blynk.virtualWrite(VPIN_SW2, HIGH);
+    Blynk.virtualWrite(Saklar2V, HIGH);
     relay2_state = HIGH;
     sw2_state = HIGH;
   }
-  if (digitalRead(SW_2) == HIGH && sw2_state == HIGH) {
+  if (digitalRead(sakalr2) == HIGH && sw2_state == HIGH) {
     digitalWrite(RELAY_2, HIGH);
-    Blynk.virtualWrite(VPIN_SW2, LOW);
+    Blynk.virtualWrite(Saklar2V, LOW);
     relay2_state = LOW;
     sw2_state = 0;
   }
     //switch3
-  if (digitalRead(SW_3) == LOW && sw3_state == LOW) {
+  if (digitalRead(sakalr3) == LOW && sw3_state == LOW) {
     digitalWrite(RELAY_3, LOW);
-    Blynk.virtualWrite(VPIN_SW3, HIGH);
+    Blynk.virtualWrite(Saklar3V, HIGH);
     relay3_state = HIGH;
     sw3_state = HIGH;
   }
-  if (digitalRead(SW_3) == HIGH && sw3_state == HIGH) {
+  if (digitalRead(sakalr3) == HIGH && sw3_state == HIGH) {
     digitalWrite(RELAY_3, HIGH);
-    Blynk.virtualWrite(VPIN_SW3, LOW);
+    Blynk.virtualWrite(Saklar3V, LOW);
     relay3_state = LOW;
     sw3_state = 0;
   }
@@ -153,9 +154,9 @@ void setup() {
   pinMode(RELAY_2, OUTPUT);
   pinMode(RELAY_3, OUTPUT);
   pinMode(RELAY_4, OUTPUT);
-  pinMode(SW_1, INPUT_PULLUP);
-  pinMode(SW_2, INPUT_PULLUP);
-  pinMode(SW_3, INPUT_PULLUP);
+  pinMode(sakalr1, INPUT_PULLUP);
+  pinMode(sakalr2, INPUT_PULLUP);
+  pinMode(sakalr3, INPUT_PULLUP);
 
   //kondisikan relay OFF diawal
   digitalWrite(RELAY_1, HIGH);

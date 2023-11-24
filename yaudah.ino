@@ -10,16 +10,20 @@
 #include <DHTesp.h>
 #include <LiquidCrystal_I2C.h>
 
-#define DHT_PIN 15
-#define RELAY_1 13
-#define RELAY_2 23
-#define RELAY_3 25
-#define RELAY_4 26
 
+//pin relay sama dht
+#define DHT_PIN 15
+#define relay1 13
+#define relay2 23
+#define relay3 25
+#define relay4 26
+
+//saklar
 #define sakalr1 2
 #define sakalr2 12
 #define sakalr3 14
 
+//ke blynk
 #define Saklar1V V0
 #define Saklar2V V1
 #define Saklar3V V2
@@ -45,53 +49,53 @@ char pass[] = "tulangpaus";
 BlynkTimer timer;
 
 BLYNK_CONNECTED() {
-  // Request the latest state from the server
+  // menyambung blynk
   Blynk.syncVirtual(Saklar1V);
   Blynk.syncVirtual(Saklar2V);
   Blynk.syncVirtual(Saklar3V);
   Blynk.syncVirtual(Saklar4V);
 }
-//BLYNK V0
+// v0
 BLYNK_WRITE(Saklar1V)
 {
  relay1_state = param.asInt();
  if(relay1_state == 1) {
-  digitalWrite(RELAY_1, LOW);
+  digitalWrite(relay1, LOW);
  }
  else{
-  digitalWrite(RELAY_1, HIGH);
+  digitalWrite(relay1, HIGH);
  }
 }
-//BLYNK V1
+// v1
 BLYNK_WRITE(Saklar2V)
 {
  relay2_state = param.asInt();
  if(relay2_state == 1) {
-  digitalWrite(RELAY_2, LOW);
+  digitalWrite(relay2, LOW);
  }
  else{
-  digitalWrite(RELAY_2, HIGH);
+  digitalWrite(relay2, HIGH);
  }
 }
-//BLYNK V2
+// v2
 BLYNK_WRITE(Saklar3V)
 {
  relay3_state = param.asInt();
  if(relay3_state == 1) {
-  digitalWrite(RELAY_3, LOW);
+  digitalWrite(relay3, LOW);
  }
  else{
-  digitalWrite(RELAY_3, HIGH);
+  digitalWrite(relay3, HIGH);
  }
 }
-//BLYNK V3
+// v3
 BLYNK_WRITE(Saklar4V)
 {
  int relay4_state = param.asInt();
- digitalWrite(RELAY_4, !relay4_state);
+ digitalWrite(relay4, !relay4_state);
  }
 
-//fungsi baca sensor
+ // sensor dht ke lcd
 void sendSensor()
 {
  TempAndHumidity  data = dhtSensor.getTempAndHumidity();
@@ -104,44 +108,44 @@ void sendSensor()
  Blynk.virtualWrite(suhuv, temperature); 
 }
 
-//fungsi untuk kontrol manual tanpa Blynk
+ // saklar fisik
 void manual_control()
 {
-  //switch1
+  //saklar1
   if (digitalRead(sakalr1) == LOW && sw1_state == LOW) {
-    digitalWrite(RELAY_1, LOW);
+    digitalWrite(relay1, LOW);
     Blynk.virtualWrite(Saklar1V, HIGH);
     relay1_state = HIGH;
     sw1_state = HIGH;
   }
   if (digitalRead(sakalr1) == HIGH && sw1_state == HIGH) {
-    digitalWrite(RELAY_1, HIGH);
+    digitalWrite(relay1, HIGH);
     Blynk.virtualWrite(Saklar1V, LOW);
     relay1_state = LOW;
     sw1_state = 0;
   }
-  //switch2
+  //saklar2
   if (digitalRead(sakalr2) == LOW && sw2_state == LOW) {
-    digitalWrite(RELAY_2, LOW);
+    digitalWrite(relay2, LOW);
     Blynk.virtualWrite(Saklar2V, HIGH);
     relay2_state = HIGH;
     sw2_state = HIGH;
   }
   if (digitalRead(sakalr2) == HIGH && sw2_state == HIGH) {
-    digitalWrite(RELAY_2, HIGH);
+    digitalWrite(relay2, HIGH);
     Blynk.virtualWrite(Saklar2V, LOW);
     relay2_state = LOW;
     sw2_state = 0;
   }
-    //switch3
+    //saklar3
   if (digitalRead(sakalr3) == LOW && sw3_state == LOW) {
-    digitalWrite(RELAY_3, LOW);
+    digitalWrite(relay3, LOW);
     Blynk.virtualWrite(Saklar3V, HIGH);
     relay3_state = HIGH;
     sw3_state = HIGH;
   }
   if (digitalRead(sakalr3) == HIGH && sw3_state == HIGH) {
-    digitalWrite(RELAY_3, HIGH);
+    digitalWrite(relay3, HIGH);
     Blynk.virtualWrite(Saklar3V, LOW);
     relay3_state = LOW;
     sw3_state = 0;
@@ -150,19 +154,19 @@ void manual_control()
 
 void setup() {
   Serial.begin(115200);
-  pinMode(RELAY_1, OUTPUT);
-  pinMode(RELAY_2, OUTPUT);
-  pinMode(RELAY_3, OUTPUT);
-  pinMode(RELAY_4, OUTPUT);
+  pinMode(relay1, OUTPUT);
+  pinMode(relay2, OUTPUT);
+  pinMode(relay3, OUTPUT);
+  pinMode(relay4, OUTPUT);
   pinMode(sakalr1, INPUT_PULLUP);
   pinMode(sakalr2, INPUT_PULLUP);
   pinMode(sakalr3, INPUT_PULLUP);
 
-  //kondisikan relay OFF diawal
-  digitalWrite(RELAY_1, HIGH);
-  digitalWrite(RELAY_2, HIGH);
-  digitalWrite(RELAY_3, HIGH);
-  digitalWrite(RELAY_4, HIGH);
+  //relay
+  digitalWrite(relay1, HIGH);
+  digitalWrite(relay2, HIGH);
+  digitalWrite(relay3, HIGH);
+  digitalWrite(relay4, HIGH);
 
   Blynk.begin(auth, ssid, pass);
 
@@ -174,7 +178,7 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  
   Blynk.run();
   timer.run();
   manual_control();
